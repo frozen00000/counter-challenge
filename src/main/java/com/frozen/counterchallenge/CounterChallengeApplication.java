@@ -1,33 +1,59 @@
 package com.frozen.counterchallenge;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.*;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 import java.util.concurrent.atomic.LongAccumulator;
 
-@SpringBootApplication
-@RestController
-@ResponseBody
 public class CounterChallengeApplication {
 
-	private final LongAccumulator atomicLong = new LongAccumulator(Long::sum, 0);
+	public static void main(String[] args) throws InterruptedException {
+        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap()
+                    .group(eventLoopGroup)
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    .childHandler(new ChannelInitializer<>() {
+						@Override
+						protected void initChannel(Channel channel) throws Exception {
+							ChannelPipeline pipeline = channel.pipeline();
+							pipeline.addLast(new HttpServerCodec());
+							pipeline.addLast(new HttpServerHandler());
+						}
+					})
+                    .channel(NioServerSocketChannel.class);
 
-	public static void main(String[] args) {
-		SpringApplication.run(CounterChallengeApplication.class, args);
+            Channel ch = bootstrap.bind(8080).sync().channel();
+            ch.closeFuture().sync();
+        } finally {
+            eventLoopGroup.shutdownGracefully();
+        }
 	}
 
-	@GetMapping("/count")
-	public Mono<Long> get() {
-		return Mono.just(atomicLong.get());
-	}
+	static class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
-	@GetMapping("/")
-	public void inc() {
-		atomicLong.accumulate(1);
+		private final LongAccumulator atomicLong = new LongAccumulator(Long::sum, 0);
+
+		@Override
+		protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+			if (msg instanceof LastHttpContent) {
+				atomicLong.accumulate(1);
+				FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+				response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, 0);
+				ctx.write(response);
+			}
+		}
+
+		@Override
+		public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+			ctx.flush();
+		}
+
 	}
 
 }
