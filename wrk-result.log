@@ -1,0 +1,14 @@
+wrk --latency -t12 -c100 -d10s http://localhost:8080/
+Running 10s test @ http://localhost:8080/
+  12 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     0.99ms  285.11us  21.41ms   97.34%
+    Req/Sec     8.10k   633.22     9.00k    66.01%
+  Latency Distribution
+     50%    0.95ms
+     75%    1.03ms
+     90%    1.14ms
+     99%    1.39ms
+  976924 requests in 10.10s, 35.40MB read
+Requests/sec:  96712.61
+Transfer/sec:      3.50MB
