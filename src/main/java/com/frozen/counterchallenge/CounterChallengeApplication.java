@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.LongAccumulator;
 
 public class CounterChallengeApplication {
 
+	private final static LongAccumulator atomicLong = new LongAccumulator(Long::sum, 0);
+
 	public static void main(String[] args) throws InterruptedException {
         EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
         try {
@@ -36,8 +38,6 @@ public class CounterChallengeApplication {
 	}
 
 	static class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
-
-		private final LongAccumulator atomicLong = new LongAccumulator(Long::sum, 0);
 
 		@Override
 		protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
