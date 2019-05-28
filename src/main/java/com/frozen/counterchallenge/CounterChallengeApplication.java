@@ -16,6 +16,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class CounterChallengeApplication {
 
+	private final static LongAccumulator atomicLong = new LongAccumulator(Long::sum, 0);
+
 	public static void main(String[] args) throws InterruptedException {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -43,8 +45,6 @@ public class CounterChallengeApplication {
 	}
 
 	static class HttpServerHandler extends ChannelInboundHandlerAdapter {
-
-		private final LongAccumulator atomicLong = new LongAccumulator(Long::sum, 0);
 
 		private static final AsciiString CONTENT_LENGTH = AsciiString.cached("Content-Length");
 
