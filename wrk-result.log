@@ -2,13 +2,13 @@ wrk --latency -t12 -c100 -d10s http://localhost:8080/
 Running 10s test @ http://localhost:8080/
   12 threads and 100 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     0.88ms   83.13us   8.53ms   96.71%
-    Req/Sec     9.09k   395.91     9.59k    66.17%
+    Latency   838.16us  137.18us   6.00ms   95.11%
+    Req/Sec     9.59k   633.62    10.18k    92.74%
   Latency Distribution
-     50%    0.86ms
-     75%    0.92ms
-     90%    0.94ms
-     99%    1.07ms
-  1095751 requests in 10.10s, 39.71MB read
-Requests/sec: 108492.43
-Transfer/sec:      3.93MB
+     50%  807.00us
+     75%  834.00us
+     90%    0.87ms
+     99%    1.43ms
+  1156482 requests in 10.10s, 41.91MB read
+Requests/sec: 114506.91
+Transfer/sec:      4.15MB

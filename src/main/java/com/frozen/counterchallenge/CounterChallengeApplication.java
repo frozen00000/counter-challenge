@@ -1,10 +1,22 @@
 package com.frozen.counterchallenge;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.kqueue.KQueueEventLoopGroup;
+import io.netty.channel.kqueue.KQueueServerSocketChannel;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -15,7 +27,7 @@ public class CounterChallengeApplication {
 	private final static LongAccumulator atomicLong = new LongAccumulator(Long::sum, 0);
 
 	public static void main(String[] args) throws InterruptedException {
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+        EventLoopGroup eventLoopGroup = new KQueueEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap()
                     .group(eventLoopGroup)
@@ -28,7 +40,7 @@ public class CounterChallengeApplication {
 							pipeline.addLast(new HttpServerHandler());
 						}
 					})
-                    .channel(NioServerSocketChannel.class);
+                    .channel(KQueueServerSocketChannel.class);
 
             Channel ch = bootstrap.bind(8080).sync().channel();
             ch.closeFuture().sync();
