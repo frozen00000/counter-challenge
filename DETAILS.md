@@ -4,11 +4,11 @@
 
 ![alt profiler](https://github.com/frozen00000/counter-challenge/blob/pure-netty/profiler.png)
 
-`sun.nio.ch.FileDispatcherImpl.write0` - 32.5%
+`io.netty.channel.unix.FileDescriptor.writeAddress` - 30.8%
 
-`sun.nio.ch.FileDispatcherImpl.read0` - 10.3%
+`io.netty.channel.unix.FileDescriptor.readAddress` - 9.2%
 
-`sun.nio.ch.KQueue.poll` - 34.4%
+`io.netty.channel.kqueue.Native.keventWait` - 36.0%
 
 ### WRK results
 
