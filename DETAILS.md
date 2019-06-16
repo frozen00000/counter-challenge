@@ -2,7 +2,7 @@
 
 ### Profiler statistics
 
-![alt profiler](https://github.com/frozen00000/counter-challenge/blob/pure-netty/profiler.png)
+![alt profiler](https://github.com/frozen00000/counter-challenge/blob/pure-netty-native-transport/profiler.png)
 
 `io.netty.channel.unix.FileDescriptor.writeAddress` - 30.8%
 
